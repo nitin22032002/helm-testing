@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-express-deployment
+  namespace: mongo-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-express-pods
+  template:
+    metadata:
+      labels:
+        app: mongo-express-pods
+    spec:
+      containers:
+        - name: mongo-express-container
+          image: mongo-express:latest
+          ports:
+            - containerPort: 8081
+          env:
+            - name: ME_CONFIG_MONGODB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: mongo-config-map
+                  key: DB_URL
+            - name: ME_CONFIG_BASICAUTH_USERNAME
+              value:
+            - name: ME_CONFIG_BASICAUTH_PASSWORD
+              value:
+            - name: ME_CONFIG_MONGODB_ENABLE_ADMIN
+              value: "true"
+            - name: ME_CONFIG_MONGODB_ADMINUSERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: DB_USER
+            - name: ME_CONFIG_MONGODB_ADMINPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: DB_PASSWORD
