@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-deployment
+  namespace: mongo-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb-pods
+  template:
+    metadata:
+      labels:
+        app: mongodb-pods
+    spec:
+      containers:
+        - name: mongo-container
+          image: mongo:latest
+          ports:
+            - containerPort: 27017
+          env:
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: DB_PASSWORD
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  namespace: mongo-db
+spec:
+  selector:
+    app: mongodb-pods
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+  type: ClusterIP
