@@ -29,18 +29,3 @@ spec:
                 secretKeyRef:
                   name: mongo-secret
                   key: DB_PASSWORD
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mongodb
-  namespace: mongo-db
-spec:
-  selector:
-    app: mongodb-pods
-  ports:
-    - protocol: TCP
-      port: 27017
-      targetPort: 27017
-  type: ClusterIP
